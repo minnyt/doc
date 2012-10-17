@@ -1,0 +1,80 @@
+====== [ Basic Setup ] ======
+
+==== Change Root Pass ====
+# passwd
+# nano ~/.profile
+<code>
+PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]# "
+</code>
+
+==== Add User ====
+# adduser hmin
+# adduser hmin sudo
+# chmod u+s /usr/bin/sudo
+# create bin/su
+
+==== Add www group ====
+# groupadd www
+# adduser hmin www
+# chgrp www /var/www
+# chmod g+w /var/www
+
+==== Install nano ====
+# apt-get update
+# apt-get install nano
+
+==== Generate Key ===
+
+
+
+====== [ Web Server ] ======
+
+==== disable apache2/sendmail ====
+# apt-get install chkconfig
+# cd /sbin
+# ln -s /usr/lib/insserv/insserv
+# chkconfig apache2 off
+# chkconfig sendmail off
+
+==== Install phpfpm ====
+http://www.howtoforge.com/installing-nginx-with-php5-and-php-fpm-and-mysql-support-lemp-on-ubuntu-12.04-lts
+# apt-get install php5-fpm
+# apt-get install php5-cli
+# nano /etc/php5/fpm/pool.d/www.conf
+<code>
+;listen = 127.0.0.1:9000
+listen = /tmp/php5-fpm.sock
+</code>
+
+==== Install nginx ====
+http://wiki.nginx.org/Install
+# apt-get install python-software-properties
+# add-apt-repository ppa:nginx/$nginx
+# apt-get update 
+# apt-get install nginx
+# nano /etc/nginx/sites-enabled/default
+<code>
+server {
+	listen   80;
+	server_name  nytd.us;
+	root  /var/www/nytd.us;
+	index index.php index.html index.htm;
+	autoindex on;
+
+	location / {
+		try_files $uri $uri/ /index.html;
+	}
+
+	location ~ \.php$ {
+		try_files $uri =404;
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_pass unix:/tmp/php5-fpm.sock;
+		fastcgi_index index.php;
+		include fastcgi_params;
+	}
+
+	location ~ /\.ht {
+		deny all;
+	}
+}
+</code>
