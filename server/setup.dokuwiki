@@ -23,9 +23,6 @@ PS1="\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\
 # apt-get update
 # apt-get install nano
 
-==== Generate Key ===
-
-
 
 ====== [ Web Server ] ======
 
